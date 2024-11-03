@@ -1,14 +1,14 @@
 # Python scripts for Fortran
 Python scripts to analyze and reformat Fortran code
 
-In `fortran_procedures.py`,
+`fortran_procedures.py` has the function
 
 ```
 def extract_procedures(lines):
     """ Extracts subroutine and function definitions from a list of lines of Fortran code. """
 ```
 
-In `xxsplit_fortran_line.py`,
+`xxsplit_fortran_line.py` has the function
 ```
 def split_fortran_line(line):
     """ Splits a Fortran line into code and comment parts, ignoring '!' inside quotes. """
