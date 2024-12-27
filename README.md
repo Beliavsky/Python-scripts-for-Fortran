@@ -1,5 +1,5 @@
 # Python scripts for Fortran
-Python scripts to analyze and reformat Fortran code
+Python scripts to fix, analyze and reformat Fortran code
 
 `fortran_procedures.py` has the function
 
