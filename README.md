@@ -13,3 +13,6 @@ def extract_procedures(lines):
 def split_fortran_line(line):
     """ Splits a Fortran line into code and comment parts, ignoring '!' inside quotes. """
 ```
+
+`move_fortran_declarations.py` is a tool by ClaudeAI for fixing Fortran code by moving declarations
+before executable statements. ChatGPT o1 can produce code that needs such a fix.
