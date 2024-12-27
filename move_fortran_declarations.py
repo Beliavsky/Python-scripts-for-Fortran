@@ -1,5 +1,6 @@
 """
-A tool for fixing Fortran code by moving all declarations to the correct position.
+A tool by ClaudeAI for fixing Fortran code by moving all declarations
+to the correct position.
 
 This module provides functionality to reorganize Fortran code to ensure proper ordering of statements:
 1. PROGRAM/SUBROUTINE/FUNCTION statement
