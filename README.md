@@ -22,3 +22,15 @@ before executable statements. ChatGPT o1 can produce code that needs such a fix.
 def remove_fortran_continuations(code):
     """Convert Fortran continuation lines into single lines."""
 ```
+
+`xsplit_fortran_statements.py` has the function
+```
+def split_fortran_statements(code):
+    """Split Fortran statements separated by semicolons into separate lines."""
+```
+
+`xadd_colons_fortran_declarations.py` has the function
+```
+def add_colon_to_declarations(code):
+    """Add :: to Fortran declarations that do not have it."""
+```
