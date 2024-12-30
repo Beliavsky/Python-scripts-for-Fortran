@@ -18,5 +18,7 @@ def split_fortran_line(line):
 before executable statements. ChatGPT o1 can produce code that needs such a fix.
 
 `xremove_fortran_continuations.py` has the function
-`def remove_fortran_continuations(code):
-    """Convert Fortran continuation lines into single lines.""
+```
+def remove_fortran_continuations(code):
+    """Convert Fortran continuation lines into single lines."""
+```
