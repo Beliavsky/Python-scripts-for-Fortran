@@ -1,5 +1,7 @@
 # Python scripts for Fortran
-Python scripts to fix, analyze and reformat Fortran code
+Python scripts to create make files and to fix, analyze and reformat Fortran code.
+
+`xxmake_bat_fortran.py` is a script to create a make file given a compiler and a list of source files.
 
 `fortran_procedures.py` has the function
 
