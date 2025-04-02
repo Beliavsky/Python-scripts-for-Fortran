@@ -23,7 +23,7 @@ from strip_suffix import strip_suffix
 
 # --- Step 1: Parse Command-Line Arguments ---
 if len(sys.argv) < 3:
-    print("Usage: python create_gnu_make.py <compiler> <list_file1> <list_file2> ...")
+    print("Usage: python xxmake_bat_fortran.py <compiler> <list_file1> <list_file2> ...")
     sys.exit(1)
 
 # The first argument is the compiler
