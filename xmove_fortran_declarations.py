@@ -8,6 +8,9 @@ def process_segment(segment_lines: list) -> list:
     to immediately after the header of the block. For functions and subroutines the header
     is taken as the initial lines up to (and including) the line with "implicit none".
     For other blocks a slightly different heuristic is used.
+    
+    Additionally, any declarations moved are re-indented to match any declarations already
+    present in the header (if any), ensuring consistent alignment.
     """
     declaration_lines = []
     other_lines = []
@@ -18,7 +21,7 @@ def process_segment(segment_lines: list) -> list:
         else:
             other_lines.append(line)
 
-    # Determine if this segment is a function or subroutine.
+    # Determine the block header (first non-blank, non-comment line).
     seg_header = None
     for line in other_lines:
         if line.strip() == "" or line.strip().startswith("!"):
@@ -28,7 +31,7 @@ def process_segment(segment_lines: list) -> list:
 
     insertion_index = None
     if seg_header is not None and (seg_header.startswith("function") or seg_header.startswith("subroutine")):
-        # For functions/subroutines, we insert immediately after "implicit none" (if present).
+        # For functions/subroutines, insert immediately after "implicit none" (if present).
         for idx, line in enumerate(other_lines):
             if "implicit none" in line.lower():
                 insertion_index = idx + 1
@@ -36,11 +39,10 @@ def process_segment(segment_lines: list) -> list:
         if insertion_index is None:
             insertion_index = 1 if other_lines else 0
     else:
-        # For other blocks, use the previous heuristic:
+        # For other blocks, look for "implicit none" and preserve any following blank line.
         for idx, line in enumerate(other_lines):
             if "implicit none" in line.lower():
                 insertion_index = idx + 1
-                # Preserve any following blank line.
                 for j in range(idx + 1, len(other_lines)):
                     if other_lines[j].strip() == "":
                         insertion_index = j + 1
@@ -56,7 +58,28 @@ def process_segment(segment_lines: list) -> list:
             else:
                 insertion_index = 0
 
-    return other_lines[:insertion_index] + declaration_lines + other_lines[insertion_index:]
+    # Determine the target indentation.
+    # Try to find a declaration line already in the header area.
+    target_indent = None
+    for line in other_lines[:insertion_index]:
+        if "::" in line and not line.strip().startswith("!"):
+            target_indent = line[:len(line) - len(line.lstrip())]
+            break
+    if target_indent is None:
+        # Fallback: use the indentation of the first non-blank, non-comment line.
+        for line in other_lines:
+            if line.strip() != "" and not line.strip().startswith("!"):
+                target_indent = line[:len(line) - len(line.lstrip())]
+                break
+    if target_indent is None:
+        target_indent = ""
+
+    # Re-indent the declaration lines to match the target indentation.
+    reindented_declarations = []
+    for line in declaration_lines:
+        reindented_declarations.append(target_indent + line.lstrip())
+
+    return other_lines[:insertion_index] + reindented_declarations + other_lines[insertion_index:]
 
 
 def is_block_start(line: str) -> bool:
@@ -95,16 +118,28 @@ def is_procedure_start(line: str) -> bool:
 def extract_block(lines: list, start_index: int) -> (list, int):
     """
     Extract a block starting at start_index (assumed to be a block start) until
-    the first line that starts with "end" (case-insensitive). Returns the block
-    as a list of lines and the index of the next line after the block.
+    the corresponding end statement is found.
+
+    The block is assumed to be one of: module, program, subroutine, or function.
+    The block ends when a line beginning with "end" is encountered that either
+    is exactly "end" or starts with "end " followed by the block's keyword.
     """
+    header = lines[start_index].lstrip().lower()
+    block_kw = None
+    for kw in ("program", "module", "subroutine", "function"):
+        if header.startswith(kw):
+            block_kw = kw
+            break
     block = [lines[start_index]]
     i = start_index + 1
     while i < len(lines):
-        block.append(lines[i])
-        if lines[i].lstrip().lower().startswith("end"):
-            i += 1
-            break
+        line = lines[i]
+        block.append(line)
+        if line.lstrip().lower().startswith("end"):
+            lower_line = line.lstrip().lower()
+            if lower_line == "end" or (block_kw is not None and lower_line.startswith("end " + block_kw)):
+                i += 1
+                break
         i += 1
     return block, i
 
